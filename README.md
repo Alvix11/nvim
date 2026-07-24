@@ -10,8 +10,8 @@ Before starting, make sure you have the following ready:
 * The Odoo source code repository in a local path.
 * Neovim or NvChad.
 * Files from the [OdooLS Releases page](https://github.com/odoo/odoo-ls/releases):
-1. The server archive corresponding to your system (e.g., `odoo-linux-x86_64-X.X.X.tar.gz`).
-2. The **`typeshed.zip`** file.
+  1. The server archive corresponding to your system (e.g., `odoo-linux-x86_64-X.X.X.tar.gz`).
+  2. The **`typeshed.zip`** file.
 
 
 
