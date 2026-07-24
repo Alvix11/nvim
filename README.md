@@ -41,7 +41,6 @@ Installing the requirements from the Odoo repository inside the same virtual env
 
 ```bash
 ~/dev/odoo_env/bin/pip install -r ~/odoo/requirements.txt
-
 ```
 
 ## 4. Download `odoo_ls_server` and `typeshed.zip` from Releases
@@ -71,7 +70,6 @@ With this layout, the path for `additional_stubs` in your configuration will be:
 
 ```text
 ${userHome}/.local/share/nvim/odoo/typeshed/stubs/
-
 ```
 
 ## 5. Create `odools.toml`
@@ -168,7 +166,6 @@ my-odoo-project/
 ├── internal/
 ├── third-party/
 └── enterprise/
-
 ```
 # 9. Common issues
 
