@@ -1,6 +1,6 @@
 # Practical Guide: OdooLS in Neovim/NvChad for Odoo
 
-This guide documents a stable setup of **Odoo Language Server (OdooLS)** for Neovim/NvChad with Python and XML support. It covers downloading the executable, extracting `typeshed.zip`, creating the virtual environment, configuring `odools.toml` and `pyrightconfig.json`, and setting up Neovim LSP using `selectedProfile = "main"`.
+This guide documents a stable setup of **Odoo Language Server (OdooLS)** for Neovim/NvChad with Python and XML support.
 
 ---
 
@@ -8,9 +8,10 @@ This guide documents a stable setup of **Odoo Language Server (OdooLS)** for Neo
 
 Before starting, make sure you have the following ready:
 
-* **Python and `venv**`: Ensure you have the Python version compatible with your target Odoo version installed (see Step 1).
-* **Odoo source code repository** in a local path.
-* **Neovim** or **NvChad**.
+* `Python` and `venv**`: Ensure you have the Python version compatible with your target Odoo version installed (see Step 1).
+* `Odoo source code repository` in a local path.
+* `Odoo Enterprise source code repository` in a local path *(optional: used in this example guide, but not mandatory if you only work with Community)*.
+* `Neovim` or `NvChad`.
 * Files from the [OdooLS Releases page](https://github.com/odoo/odoo-ls/releases):
 1. The server archive corresponding to your system (e.g., `odoo-linux-x86_64-X.X.X.tar.gz`).
 2. The **`typeshed.zip`** file.
@@ -24,16 +25,14 @@ Before starting, make sure you have the following ready:
 > [!IMPORTANT]
 > **Python Version Compatibility:**
 > Make sure to create the virtual environment using the exact Python version required by the target Odoo version you are developing for.
-> * **Odoo 18 / 17:** Python 3.10 – 3.12 (avoid Python 3.14+ as binary wheels are missing).
-> * **Odoo 15 / 16:** Python 3.8 – 3.10.
-> 
-> 
+> Example:
+> * **Odoo 17:** Python 3.10 – 3.12 (avoid Python 3.14+ as binary wheels are missing).
 
 Creating a separate virtual environment for OdooLS helps the server resolve Odoo imports and dependencies using a controlled Python instance. OdooLS uses `python_path` from `odools.toml`, so this path must point to the correct interpreter within the virtual environment.
 
 ```bash
-# Example for Odoo 17/18 using Python 3.10
-python3.10 -m venv ~/dev/odoo_env
+# Example for Odoo 17 using Python 3.12
+python3.12 -m venv venv-odoo-17
 
 ```
 
@@ -47,7 +46,7 @@ python3.10 -m venv ~/dev/odoo_env
 If the virtual environment cannot "see" the Odoo source code, the server might start but fail on imports or contextual analysis. A practical method is to create a `.pth` file inside the environment's `site-packages` directory to add the Odoo repository to the Python path.
 
 ```bash
-~/dev/odoo_env/bin/python -c "import site; open(site.getsitepackages()[0] + '/odoo.pth', 'w').write('$HOME/odoo\n')"
+~/dev/venv-odoo-17/bin/python -c "import site; open(site.getsitepackages()[0] + '/odoo.pth', 'w').write('$HOME/odoo\n')"
 
 ```
 
@@ -59,21 +58,12 @@ Installing the requirements from the Odoo repository inside the same virtual env
 
 > [!WARNING]
 > * Ensure your Odoo repository is on the correct branch before installing requirements.
-> * **`psycopg2` vs `psycopg2-binary**`: If installing requirements fails due to missing C dependencies (e.g., `pg_config` executable not found), edit `requirements.txt` (or install manually) replacing `psycopg2` with `psycopg2-binary` to use pre-compiled binaries:
-> ```bash
-> # In case psycopg2 compilation fails:
-> ~/dev/odoo_env/bin/pip install psycopg2-binary
-> 
-> ```
-> 
-> 
-> 
-> 
+> * `psycopg2` vs `psycopg2-binary`: If installing requirements fails due to missing C dependencies (e.g., `pg_config` executable not found), edit `requirements.txt` replacing `psycopg2` with `psycopg2-binary` to use pre-compiled binaries.
 
 Install the requirements file:
 
 ```bash
-~/dev/odoo_env/bin/pip install -r ~/odoo/requirements.txt
+~/dev/venv-odoo-17/bin/pip install -r ~/odoo/requirements.txt
 
 ```
 
@@ -116,14 +106,12 @@ Recommended example:
 [[config]]
 name = "main"
 odoo_path = "${userHome}/odoo"
-python_path = "${userHome}/dev/odoo_env/bin/python"
+python_path = "${userHome}/dev/venv-odoo-17/bin/python"
 addons_paths = [
+    "${workspaceFolder}/enterprise",
     "${workspaceFolder}/internal",
     "${workspaceFolder}/custom",
     "${workspaceFolder}/third-party",
-    "${workspaceFolder}/enterprise",
-    # "${workspaceFolder}/addons",
-    # "${workspaceFolder}/custom-modules",
 ]
 additional_stubs = ["${userHome}/.local/share/nvim/odoo/typeshed/stubs/"]
 
@@ -142,12 +130,17 @@ additional_stubs = ["${userHome}/.local/share/nvim/odoo/typeshed/stubs/"]
 
 Although OdooLS provides Odoo-specific autocompletion and navigation, a `pyrightconfig.json` file helps with general Python imports and diagnostics.
 
+> [!TIP]
+> **Recommendation: Use `basedpyright` over standard `pyright`**
+> 
+> `basedpyright` is an enhanced fork of Pyright that offers better performance, improved type inference, and better integration with Neovim LSP setups. Both `pyright` and `basedpyright` parse `pyrightconfig.json` identically, so this configuration file works seamlessly for both without requiring any modification.
+
 Example:
 
 ```json
 {
   "venvPath": "${HOME}/dev",
-  "venv": "odoo_env",
+  "venv": "venv-odoo-17",
   "extraPaths": [
     "${HOME}/odoo",
     "${HOME}/odoo/odoo",
@@ -206,7 +199,6 @@ my-odoo-project/
 ├── internal/
 ├── third-party/
 └── enterprise/
-
 ```
 
 ---
@@ -222,11 +214,13 @@ my-odoo-project/
 
 * Occurs if `selectedProfile` in Neovim does not match `name` inside `odools.toml`.
 
-### `self.env[""]` autocompletion is not working well
-
-* Check that `addons_paths` is correctly declared in `odools.toml`, that each module has its `__manifest__.py`, and that you open Neovim from the project root (`nvim .`).
-* Verify that you checked out the correct Odoo git branch prior to generating the `.pth` file.
-
 ### Python imports show up in red
 
 * Ensure that `pyrightconfig.json` has the correct paths in `extraPaths` pointing to your Odoo source code.
+
+---
+
+## Acknowledgements & References
+
+* This configuration was inspired by the [odoo-neovim](https://github.com/odoo/odoo-neovim) repository.
+* Special thanks to [@ctrlLuzzio](https://github.com/ctrlLuzzio) and [@VizMan0616](https://github.com/VizMan0616) for their guidance and help in building this guide.
