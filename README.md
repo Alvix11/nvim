@@ -157,7 +157,7 @@ vim.lsp.enable("odoo_ls")
 
 ```
 
-## 8. Recommended project structure
+## 8. Example project structure
 
 ```text
 my-odoo-project/
@@ -170,23 +170,7 @@ my-odoo-project/
 └── enterprise/
 
 ```
-
-## 9. Summary of installation commands
-
-```bash
-mkdir -p ~/.local/share/nvim/odoo
-python3 -m venv ~/dev/odoo_env
-~/dev/odoo_env/bin/python -c "import site; open(site.getsitepackages()[0] + '/odoo.pth', 'w').write('$HOME/odoo\n')"
-~/dev/odoo_env/bin/pip install -r ~/odoo/requirements.txt
-
-# From the folder where you downloaded the assets from GitHub Releases:
-tar -xvf odoo-linux-x86_64-*.tar.gz -C ~/.local/share/nvim/odoo/
-unzip typeshed.zip -d ~/.local/share/nvim/odoo/typeshed
-chmod +x ~/.local/share/nvim/odoo/odoo_ls_server
-
-```
-
-## 10. Common issues
+# 9. Common issues
 
 ### The server says it cannot find the profile
 
