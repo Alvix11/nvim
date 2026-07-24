@@ -4,11 +4,18 @@ This guide documents a stable setup of **Odoo Language Server (OdooLS)** for Neo
 
 ---
 
+> [!NOTE]
+> **Do you need to clone this repository?**
+> 
+> No! This repository is designed as a reference guide and configuration template. You do not need to clone the entire setup—simply copy the relevant configuration files (`odools.toml`, `pyrightconfig.json`) into your Odoo project root, and adapt the Lua LSP snippet into your existing Neovim/NvChad dotfiles.
+
+---
+
 ## Prerequisites
 
 Before starting, make sure you have the following ready:
 
-* `Python` and `venv**`: Ensure you have the Python version compatible with your target Odoo version installed (see Step 1).
+* `Python` and `venv`: Ensure you have the Python version compatible with your target Odoo version installed (see Step 1).
 * `Odoo source code repository` in a local path.
 * `Odoo Enterprise source code repository` in a local path *(optional: used in this example guide, but not mandatory if you only work with Community)*.
 * `Neovim` or `NvChad`.
