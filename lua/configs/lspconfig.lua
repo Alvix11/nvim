@@ -10,7 +10,18 @@ vim.lsp.config("rust_analyzer", {
   },
 })
 
-local servers = { "html", "cssls", "rust_analyzer", "basedpyright", "ruff", "ts_ls", "lemminx", "lua_ls", "taplo" }
+local servers = {
+  "html",
+  "cssls",
+  "rust_analyzer",
+  "basedpyright",
+  "ruff",
+  "ts_ls",
+  "lemminx",
+  "lua_ls",
+  "taplo",
+  "dockerls",
+}
 vim.lsp.enable(servers)
 
 -- read :h vim.lsp.config for changing options of lsp servers
